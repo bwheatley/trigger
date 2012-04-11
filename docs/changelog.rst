@@ -2,6 +2,17 @@
 Changelog
 =========
 
+1.0.1
+=====
+
+- All changes from release 1.0.0.100 (oh hey, duh) are officially part of this
+  release
+- :bug:`9` Fixed missing imports from ``bin/acl_script`` and removed a bunch of
+  duplicated code already within the Trigger libs.
+- Added new keywords to setup.py
+- Some new utilities added to `~trigger.acl.tools` for merging new access into
+  an existing ACL object
+
 1.0.0.100
 =========
 
