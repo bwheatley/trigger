@@ -382,34 +382,32 @@ class RangeList(object):
         self.data = data
         self._do_collapse()
 
-    def _cleanup(self, l):
+    def _cleanup(self, L):
         """
         Prepare a potential list of lists, tuples, digits for collapse. Does
         the following::
 
-        1. Convert all inner lists to tuples
+        1. Sort & Convert all inner lists to tuples
         2. Convert all tuples w/ only 1 item into single item
         3. Gather all single digits
         4. Convert to set to remove duplicates
         5. Return as a sorted list
 
         """
-        try:
-            return sorted(set(l)) # For complex types, e.g. Protocol
-        except TypeError:
-            pass # Fall through 
-
         ret = []
 
         # Get all list/tuples and return tuples
-        tuples = [tuple(i) for i in l if isinstance(i, (list, tuple))]
-        singles = [i[0] for i in tuples if len(i) == 1] # grab len of 1
-        tuples = [i for i in tuples if len(i) == 2] # filter out len of 1
-        digits = [i for i in l if isinstance(i, int)] # get digits
+        tuples = [tuple(sorted(i)) for i in L if isinstance(i, (list, tuple))]
+        singles = [i[0] for i in tuples if len(i) == 1] # Grab len of 1
+        tuples = [i for i in tuples if len(i) == 2]     # Filter out len of 1
+        digits = [i for i in L if isinstance(i, int)]   # Get digits
 
         ret.extend(singles)
         ret.extend(tuples)
         ret.extend(digits)
+
+        if not ret:
+            ret = L
 
         return sorted(set(ret))
 

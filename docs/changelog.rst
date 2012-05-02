@@ -2,8 +2,8 @@
 Changelog
 =========
 
-1.0.1
-=====
+1.1
+===
 
 - All changes from release 1.0.0.100 (oh hey, duh) are officially part of this
   release
@@ -12,6 +12,8 @@ Changelog
 - Added new keywords to setup.py
 - Some new utilities added to `~trigger.acl.tools` for merging new access into
   an existing ACL object
+- :feature:`17` `~trigger.acl.parser.RangeList` now sorts port range tuples
+  when parsing access-lists.
 
 1.0.0.100
 =========
