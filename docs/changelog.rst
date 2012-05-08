@@ -14,6 +14,9 @@ Changelog
   an existing ACL object
 - :feature:`17` `~trigger.acl.parser.RangeList` now sorts port range tuples
   when parsing access-lists.
+- :bug:`8` `~trigger.tacacsrc.get_device_password` user-friendly message moved
+  to `~trigger.twister.pty_connect` so it no longer bleeds into
+  non-interactive usage.
 
 1.0.0.100
 =========
