@@ -987,9 +987,31 @@ class Term(object):
                       '"%s" modifier not supported by IOS' % k
         return [prefix + action + x + suffix for x in self.match.output_ios()]
 
-    def output_ios(self, prefix=''):
-        """Output term to IOS traditional format."""
+    def output_ios(self, prefix=None, acl_name=None):
+        """
+        Output term to IOS traditional format.
+
+        :param prefix: Prefix to use, default: 'access-list'
+        :param acl_name: Name of access-list to display
+        """
         comments = [c.output_ios() for c in self.comments]
+        # If prefix isn't set, but name is, force the template
+        if prefix is None and acl_name is not None:
+            prefix = 'access-list %s ' % acl_name
+
+        # Or if prefix is set, but acl_name isn't, make sure prefix ends with ' '
+        elif prefix is not None and acl_name is None:
+            if not prefix.endswith(' '):
+                prefix += ' '
+
+        # Or if both are set, use them
+        elif prefix is not None and acl_name is not None:
+            prefix = '%s %s ' % (prefix.strip(), acl_name.strip())
+
+        # Otherwise no prefix
+        else:
+            prefix = ''
+
         return comments + self._ioslike(prefix)
 
     def output_ios_named(self, prefix=''):

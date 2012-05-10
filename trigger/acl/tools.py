@@ -58,7 +58,8 @@ def create_trigger_term(source_ips=[],
                 term.match[key] = [n] 
     return term
 
-def check_access(terms_to_check, new_term, quiet=True, format='junos'):
+def check_access(terms_to_check, new_term, quiet=True, format='junos',
+                 acl_name=None):
     """
     Determine whether access is permitted by a given ACL (list of terms).
 
@@ -66,6 +67,12 @@ def check_access(terms_to_check, new_term, quiet=True, format='junos'):
     is permitted, or False if not.
 
     Optionally displays the terms that apply and what edits are needed.
+
+    :param terms_to_check: A list of Term objects to check
+    :param new_term: The Term object used for the access test
+    :param quiet: Toggle whether output is displayed
+    :param format: The ACL format to use for output display
+    :param acl_name: The ACL name to use for output display
     """
     permitted = None
     matches = {
@@ -105,9 +112,10 @@ def check_access(terms_to_check, new_term, quiet=True, format='junos'):
                 elif t.action[0] in ('discard', 'reject'):
                     permitted = False
                     if not quiet:
-                        print '\n'.join(new_term.output(format))
+                        print '\n'.join(new_term.output(format,
+                                                        acl_name=acl_name))
             if not quiet:
-                print '\n'.join(t.output(format))
+                print '\n'.join(t.output(format, acl_name=acl_name))
 
     return permitted
 

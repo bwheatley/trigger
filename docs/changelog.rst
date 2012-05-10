@@ -17,6 +17,11 @@ Changelog
 - :bug:`8` `~trigger.tacacsrc.get_device_password` user-friendly message moved
   to `~trigger.twister.pty_connect` so it no longer bleeds into
   non-interactive usage.
+- :bug:`15` `~trigger.acl.parser.Term.output_ios` updated to support optional
+  ``acl_name`` argument for cases when you need to output a
+  `~trigger.acl.parser.Term` separately from an `~trigger.acl.parser.ACL`
+  object. `~trigger.acl.tools.check_access`, ``bin/check_access``, and
+  ``bin/find_access`` also had to be updated to utilize this new argument.
 
 1.0.0.100
 =========
