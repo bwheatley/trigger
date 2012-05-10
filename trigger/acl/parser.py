@@ -942,7 +942,7 @@ class Term(object):
         """
         return getattr(self, 'output_' + format)(*largs, **kwargs)
 
-    def output_junos(self):
+    def output_junos(self, *args, **kwargs):
         """Convert the term to JunOS format."""
         if self.name is None:
             raise MissingTermNameError, 'JunOS requires terms to be named'
@@ -1014,12 +1014,12 @@ class Term(object):
 
         return comments + self._ioslike(prefix)
 
-    def output_ios_named(self, prefix=''):
+    def output_ios_named(self, prefix='', *args, **kwargs):
         """Output term to IOS named format."""
         comments = [c.output_ios_named() for c in self.comments]
         return comments + self._ioslike(prefix)
 
-    def output_iosxr(self, prefix=''):
+    def output_iosxr(self, prefix='', *args, **kwargs):
         """Output term to IOS XR format."""
         comments = [c.output_iosxr() for c in self.comments]
         return comments + self._ioslike(prefix)
