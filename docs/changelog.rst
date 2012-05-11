@@ -22,6 +22,8 @@ Changelog
   `~trigger.acl.parser.Term` separately from an `~trigger.acl.parser.ACL`
   object. `~trigger.acl.tools.check_access`, ``bin/check_access``, and
   ``bin/find_access`` also had to be updated to utilize this new argument.
+- :bug:`19` `~trigger.acl.tools.check_access` updated to support 'complicated'
+  checks against Juniper firewall terms with a 'port' statement defined.
 
 1.0.0.100
 =========

@@ -76,11 +76,32 @@ def check_access(terms_to_check, new_term, quiet=True, format='junos',
     """
     permitted = None
     matches = {
-            'source-address':       new_term.match.get('source-address',[]),
-            'destination-address':  new_term.match.get('destination-address',[]),
-            'protocol':             new_term.match.get('protocol',[]),
-            'destination-port':     new_term.match.get('destination-port',[]),
-            'source-port':          new_term.match.get('source-port',[]) }
+        'source-address':       new_term.match.get('source-address',[]),
+        'destination-address':  new_term.match.get('destination-address',[]),
+        'protocol':             new_term.match.get('protocol',[]),
+        'destination-port':     new_term.match.get('destination-port',[]),
+        'source-port':          new_term.match.get('source-port',[]),
+    }
+
+    def _permitted_in_term(term, comment=' check_access: PERMITTED HERE'):
+        """
+        A little closure to re-use internally that returns a Boolean based
+        on the given Term object's action.
+        """
+        action = term.action[0]
+        if action == 'accept':
+            is_permitted = True
+            if not quiet:
+                term.comments.append(Comment(comment))
+
+        elif action in ('discard', 'reject'):
+            is_permitted = False
+            if not quiet:
+                print '\n'.join(new_term.output(format, acl_name=acl_name))
+        else:
+            is_permitted = None
+
+        return is_permitted
 
     for t in terms_to_check:
         hit = True
@@ -102,18 +123,36 @@ def check_access(terms_to_check, new_term, quiet=True, format='junos',
                         break
 
         if hit and not t.inactive:
+            # Simple access check. Elegant!
             if not complicated and permitted is None:
+                permitted = _permitted_in_term(t)
 
-                if t.action[0] == 'accept':
-                    permitted = True
-                    if not quiet: 
-                        t.comments.append(Comment('check_access: PERMITTED HERE'))
+            # Complicated checks should set hit=False unless you want
+            # them to display and potentially confuse end-users
+            # TODO (jathan): Factor this into a "better way"
+            else:
+                # Does the term have 'port' defined?
+                if 'port' in t.match:
+                    port_match = t.match.get('port')
+                    match_fields = (matches['destination-port'], matches['source-port'])
 
-                elif t.action[0] in ('discard', 'reject'):
-                    permitted = False
-                    if not quiet:
-                        print '\n'.join(new_term.output(format,
-                                                        acl_name=acl_name))
+                    # Iterate the fields, and then the ports for each field. If
+                    # one of the port numbers is within port_match, check if
+                    # the action permits/denies and set the permitted flag.
+                    for field in match_fields:
+                        for portnum in field:
+                            if portnum in port_match:
+                                permitted = _permitted_in_term(t)
+                            else:
+                                hit = False
+
+                # Other complicated checks would go here...
+
+            # If a complicated check happened and was not a hit, skip to the
+            # next term
+            if complicated and not hit:
+                continue
+
             if not quiet:
                 print '\n'.join(t.output(format, acl_name=acl_name))
 
